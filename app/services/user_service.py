@@ -25,7 +25,7 @@ def get_user_by_id(user_id: str, db: Session) -> JSONResponse:
         return JSONResponse(
             content={
                 "message": "User fetched successfully",
-                "user": user_dict
+                "user_info": user_dict
             },
             status_code=200
         )

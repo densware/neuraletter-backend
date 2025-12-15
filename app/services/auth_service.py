@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 from fastapi.params import Depends
 from jose import jwt
@@ -12,6 +13,7 @@ from app.core.config import settings
 from fastapi import status
 from app.core.auth import create_jwt_token, verify_jwt_token
 from app.utils.random_generator import generate_random_string
+from fastapi.responses import RedirectResponse
 
 # Detect if bcrypt is compatible with passlib (bcrypt>=4.1 removed __about__)
 try:
@@ -66,6 +68,8 @@ class AuthService:
             db.refresh(user)
             token = create_jwt_token(user.id, user.email)
             user_response = create_user_response(user)
+
+
             return JSONResponse(content={"message":"User created successfully", "user_info":user_response, "access_token": token, "token_type": "bearer"}, status_code=status.HTTP_201_CREATED)
         except Exception as e:
             print(e)
@@ -91,3 +95,48 @@ class AuthService:
             print(e)
             return JSONResponse(content={"message":"An unexpected error occurred"}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+
+def handle_google_login(user_info: dict, db: Session) -> RedirectResponse | JSONResponse:
+    try:
+        user = db.query(User).filter(User.email == user_info["email"]).first()
+
+        if not user:
+            user = User(
+                id=generate_random_string(),
+                email=user_info["email"],
+                first_name=user_info.get("given_name", ""),
+                last_name=user_info.get("family_name", ""),
+                is_verified=True,
+                hashed_password= generate_random_string(32)
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
+        token = create_jwt_token(user.id, user.email)
+
+        query = urlencode({
+            "access_token": token
+        })
+
+        return RedirectResponse(
+            url=f"{settings.CORS_ALLOWED_ORIGINS[0]}/login/google-callback?{query}",
+            status_code=302,
+        )
+
+        # return JSONResponse(
+        #     content={
+        #         "message": "Login successful",
+        #         "access_token": token,
+        #         "token_type": "bearer"
+        #     },
+        #     status_code=200
+        # )
+
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            content={"message": "Login with Google failed"},
+            status_code=401
+        )

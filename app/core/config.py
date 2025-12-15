@@ -21,6 +21,10 @@ class Settings(BaseSettings):
 
     RESET_PASSWORD_SECRET_KEY: str
 
+    SESSION_SECRET_KEY: str
+
+    IS_HTTPS: bool
+
     class Config:
         env_file = ".env"
 

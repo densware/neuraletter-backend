@@ -6,7 +6,7 @@ from app.db.base import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(String(255), primary_key=True, index=True)
+    id = Column(String(255), primary_key=True, index=True, nullable=False)
 
     email = Column(String(255), unique=True, index=True, nullable=False)
 
@@ -16,7 +16,7 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
 
     first_name = Column(String(100), nullable=False)
-    last_name = Column(String(100), nullable=False)
+    last_name = Column(String(100))
 
     # PostgreSQL-native millisecond timestamps
     created_at = Column(BigInteger, nullable=False, server_default=text("EXTRACT(EPOCH FROM NOW()) * 1000"))

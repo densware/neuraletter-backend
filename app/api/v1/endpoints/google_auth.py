@@ -23,6 +23,6 @@ async def google_callback(
     user_info = token.get("userinfo")
 
     if not user_info:
-        return {"message": "Failed to fetch user info"}
+        return {"message": "Failed to fetch google user info"}
 
     return handle_google_login(user_info, db)

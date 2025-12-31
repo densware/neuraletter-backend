@@ -52,7 +52,7 @@ class MistralConversationService:
                          "6. Questions are only to asked to get more context about the topic user wants the summary on. Nothing else",
 
             completion_args={
-                "temperature": 1.2,
+                "temperature": 0.8,
                 "top_p": 0.98,
             }
         )
@@ -81,7 +81,7 @@ class MistralConversationService:
             conversation_id=conversation_id,
             inputs=message,
             completion_args={
-                "temperature": 0.3,
+                "temperature": 0.4,
                 "top_p": 0.95,
             }
         )

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
     GOOGLE_REDIRECT_URI: str
 
+    SELF_BASE_URL:str
+
     CORS_ALLOWED_ORIGINS: list[str]
 
     RESET_PASSWORD_SECRET_KEY: str
